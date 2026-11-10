@@ -169,7 +169,7 @@ svg{display:block}
 
 /* 下载：浅色落地 */
 .download{background:var(--white);color:#07070a;padding:clamp(96px,14vw,180px) var(--pad) clamp(72px,9vw,120px)}
-.download__in{max-width:1100px;margin:0 auto}
+.download__in{max-width:1100px;margin:0 auto;text-align:center}
 .download h2{font-size:clamp(40px,7vw,96px);line-height:1;font-weight:600;letter-spacing:-.04em}
 .download__meta{margin-top:24px;font-size:15px;color:#6a6e78;letter-spacing:.02em}
 .download__actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px;margin-top:clamp(32px,5vw,56px)}
@@ -177,7 +177,8 @@ svg{display:block}
 .btn--dark:hover{background:#000;box-shadow:0 26px 70px rgba(7,7,10,.32)}
 .btn--line{background:transparent;color:#07070a;box-shadow:inset 0 0 0 1px #d5d6d3}
 .btn--line:hover{background:rgba(7,7,10,.04);box-shadow:inset 0 0 0 1px #a9aaa6}
-.download__tip{margin-top:32px;font-size:13px;color:#8b8f99}
+.download__tip{margin:32px auto 0;max-width:620px;font-size:13px;color:#8b8f99;text-wrap:balance}
+.download__tip b{color:#07070a;font-weight:600}
 
 /* 页脚 */
 .footer{background:var(--white);color:#07070a;padding:0 var(--pad) clamp(28px,4vw,44px)}
@@ -263,7 +264,7 @@ html.js [data-in]{opacity:0}
           下载 APK
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
         </a>
-        <span class="hero__ver"><span id="verInline" class="mono">v1.6.9</span> · arm64</span>
+        <span class="hero__ver"><span id="verInline" class="mono">v1.6.9</span> · 仅 Android</span>
       </div>
     </div>
     <div class="hero__scroll" aria-hidden="true"><i></i>Scroll</div>
@@ -343,15 +344,16 @@ html.js [data-in]{opacity:0}
   <section class="download" id="download">
     <div class="download__in">
       <h2>装上砚中雪</h2>
-      <p class="download__meta"><span id="ver" class="mono">v1.6.9</span> · 约 <span id="size" class="mono">31.8 MB</span> · Android 8.0 及以上</p>
+      <p class="download__meta"><span id="ver" class="mono">v1.6.9</span> · 约 <span id="size" class="mono">31.8 MB</span> · 仅 Android 8.0 及以上</p>
       <div class="download__actions">
         <a class="btn btn--dark" id="dlMain" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v1.6.9/app-arm64-v8a-release.apk">
           下载 APK
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
         </a>
-        <a class="btn btn--line" id="dlAlt" href="https://github.com/chuanhongyue1/yzw-data/releases/download/v1.6.9/app-arm64-v8a-release.apk" target="_blank" rel="noopener noreferrer">GitHub 备用</a>
+        <!-- 永久地址：文件名固定，每次发版覆盖同名文件，链接永远不用变 -->
+        <a class="btn btn--line" id="dlAlt" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk" target="_blank" rel="noopener noreferrer">永久地址</a>
       </div>
-      <p class="download__tip">装过旧版直接覆盖，数据保留。</p>
+      <p class="download__tip"><b>只有安卓版</b>，没有 iOS、Windows、macOS。装过旧版直接覆盖，数据保留。</p>
     </div>
   </section>
 
@@ -595,19 +597,18 @@ html.js [data-in]{opacity:0}
      以前拉 catalog.json（8MB）只为读一个版本号，太亏；探针文件就一句话。 */
   var PROBE = 'https://chuanhongyue1.github.io/yzw-data/version.json';
   var GITEE_DL = 'https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/';
-  var GH_DL = 'https://github.com/chuanhongyue1/yzw-data/releases/download/';
   var APK_NAME = 'app-arm64-v8a-release.apk';
 
   function applyVersion(tag){
     var gitee = safeUrl(GITEE_DL + tag + '/' + APK_NAME);
-    var gh = safeUrl(GH_DL + tag + '/' + APK_NAME);
     /* 打上标记：区分「拿到线上版本」和「还是页面里写死的兜底值」，排查时一眼可见 */
     document.documentElement.setAttribute('data-version', tag);
     ['ver', 'verInline'].forEach(function(id){ var el = $(id); if(el) el.textContent = tag; });
+    /* 主下载走 Gitee 的版本直链，国内快；备用是文件名固定的永久地址，
+       与版本无关，所以这里不去动它，免得把永久链接改坏。 */
     if(gitee){
       ['heroDl', 'dlMain'].forEach(function(id){ var el = $(id); if(el) el.href = gitee; });
     }
-    if(gh){ var alt = $('dlAlt'); if(alt) alt.href = gh; }
   }
 
   try{
