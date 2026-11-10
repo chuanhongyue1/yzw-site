@@ -116,6 +116,13 @@ svg{display:block}
   background:#15171c;box-shadow:0 6px 18px rgba(0,0,0,.38);
   transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
 .icons__row img:hover{transform:translateY(-5px) scale(1.06);box-shadow:0 14px 30px rgba(0,0,0,.52)}
+/* 图标墙下面的"还有更多"入口：告诉访客摆出来的只是一小部分 */
+.icons__more{display:inline-flex;align-items:center;gap:8px;margin-top:clamp(26px,3.4vw,36px);
+  padding:11px 20px;border-radius:999px;border:1px solid var(--line);
+  font-size:13px;color:var(--dim);text-decoration:none;
+  transition:border-color .4s var(--ease),color .4s var(--ease),transform .4s var(--ease)}
+.icons__more:hover{border-color:rgba(255,255,255,.3);color:#fff;transform:translateY(-2px)}
+.icons__more b{color:#fff;font-weight:500}
 
 .story{position:relative;height:340vh}
 .story__sticky{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;
@@ -251,12 +258,12 @@ html.js [data-in]{opacity:0}
     <div class="hero__bottom">
       <p class="hero__note" data-in>一百多个 Android 软件，工具、影音、阅读、游戏都有。不用注册，<b>点开就能下</b>。</p>
       <div class="hero__cta" data-in>
-        <!-- 永久下载地址：文件名固定，每次发版由脚本覆盖，网址永远不用改 -->
-        <a class="btn" id="heroDl" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk">
+        <!-- 兜底地址：页面加载后会用 version.json 里的最新版本号改写，这里只是没网/超时时的退路 -->
+        <a class="btn" id="heroDl" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v1.6.9/app-arm64-v8a-release.apk">
           下载 APK
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
         </a>
-        <span class="hero__ver"><span id="verInline" class="mono">v1.6.8</span> · arm64</span>
+        <span class="hero__ver"><span id="verInline" class="mono">v1.6.9</span> · arm64</span>
       </div>
     </div>
     <div class="hero__scroll" aria-hidden="true"><i></i>Scroll</div>
@@ -264,9 +271,10 @@ html.js [data-in]{opacity:0}
 
 <section class="icons" aria-label="软件库里的部分软件">
     <p class="icons__label">软件库里有这些</p>
+    <!-- 下面只摆了 12 个常用的，剩下的不逐个罗列，用入口说明规模 -->
     <div class="icons__row">
         <img src="icons/01.png" alt="MoePal" width="54" height="54" loading="lazy" decoding="async">
-        <img src="icons/02.png" alt="mt管理器破解版" width="54" height="54" loading="lazy" decoding="async">
+        <img src="icons/02.png" alt="MT管理器" width="54" height="54" loading="lazy" decoding="async">
         <img src="icons/03.png" alt="一触" width="54" height="54" loading="lazy" decoding="async">
         <img src="icons/04.png" alt="didi账号平台" width="54" height="54" loading="lazy" decoding="async">
         <img src="icons/05.png" alt="LocalSend" width="54" height="54" loading="lazy" decoding="async">
@@ -278,6 +286,9 @@ html.js [data-in]{opacity:0}
         <img src="icons/11.png" alt="MiNO" width="54" height="54" loading="lazy" decoding="async">
         <img src="icons/12.png" alt="Shadowrocket" width="54" height="54" loading="lazy" decoding="async">
     </div>
+    <a class="icons__more" href="#download">这是常用的几个，库里一共 <b>一百多个</b>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14m0 0 6-6m-6 6-6-6"/></svg>
+    </a>
   </section>
 
   <section class="story" id="story">
@@ -332,13 +343,13 @@ html.js [data-in]{opacity:0}
   <section class="download" id="download">
     <div class="download__in">
       <h2>装上砚中雪</h2>
-      <p class="download__meta"><span id="ver" class="mono">v1.6.8</span> · 约 <span id="size" class="mono">31.8 MB</span> · Android 8.0 及以上</p>
+      <p class="download__meta"><span id="ver" class="mono">v1.6.9</span> · 约 <span id="size" class="mono">31.8 MB</span> · Android 8.0 及以上</p>
       <div class="download__actions">
-        <a class="btn btn--dark" id="dlMain" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk">
+        <a class="btn btn--dark" id="dlMain" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v1.6.9/app-arm64-v8a-release.apk">
           下载 APK
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
         </a>
-        <a class="btn btn--line" id="dlAlt" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases" target="_blank" rel="noopener noreferrer">发布页备用</a>
+        <a class="btn btn--line" id="dlAlt" href="https://github.com/chuanhongyue1/yzw-data/releases/download/v1.6.9/app-arm64-v8a-release.apk" target="_blank" rel="noopener noreferrer">GitHub 备用</a>
       </div>
       <p class="download__tip">装过旧版直接覆盖，数据保留。</p>
     </div>
@@ -373,7 +384,7 @@ html.js [data-in]{opacity:0}
     try{ p = new URL(u); }catch(e){ return null; }
     if(p.protocol !== 'https:') return null;
     var h = p.hostname.toLowerCase(), ok;
-    if(h === 'gitee.com') ok = /^\/chuanhongyue123456\/chuanshaoapp\//i.test(p.pathname);
+    if(h === 'gitee.com') ok = /^\/chuanhongyue123456\/chuanshaoapp\/releases\/download\//i.test(p.pathname);
     else if(h === 'github.com') ok = /^\/chuanhongyue1\/yzw-data\//i.test(p.pathname);
     else if(h === 'github.io' || h.slice(-10) === '.github.io') ok = /^\/yzw-data\//i.test(p.pathname);
     else return null;
@@ -563,7 +574,7 @@ html.js [data-in]{opacity:0}
   }catch(e){}
 
   /* ---- 数字滚动 ---- */
-  var sizeToken = 0, sizeReady = false;
+  var sizeToken = 0;
   function countUp(el, target, suffix, dur){
     if(!el) return;
     var my = ++sizeToken;
@@ -578,31 +589,37 @@ html.js [data-in]{opacity:0}
     }
     requestAnimationFrame(step);
   }
-  setTimeout(function(){ if(!sizeReady) countUp($('size'), 31.8, ' MB', 1000); }, 1400);
+  setTimeout(function(){ countUp($('size'), 31.8, ' MB', 1000); }, 1400);
 
-  /* ---- 线上目录：版本号与下载地址 ---- */
-  var CATALOG = 'https://chuanhongyue1.github.io/yzw-data/catalog.json';
+  /* ---- 版本探针：只取几十字节的 version.json，页面显示永远跟最新发行版一致 ----
+     以前拉 catalog.json（8MB）只为读一个版本号，太亏；探针文件就一句话。 */
+  var PROBE = 'https://chuanhongyue1.github.io/yzw-data/version.json';
+  var GITEE_DL = 'https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/';
+  var GH_DL = 'https://github.com/chuanhongyue1/yzw-data/releases/download/';
+  var APK_NAME = 'app-arm64-v8a-release.apk';
+
+  function applyVersion(tag){
+    var gitee = safeUrl(GITEE_DL + tag + '/' + APK_NAME);
+    var gh = safeUrl(GH_DL + tag + '/' + APK_NAME);
+    ['ver', 'verInline'].forEach(function(id){ var el = $(id); if(el) el.textContent = tag; });
+    if(gitee){
+      ['heroDl', 'dlMain'].forEach(function(id){ var el = $(id); if(el) el.href = gitee; });
+    }
+    if(gh){ var alt = $('dlAlt'); if(alt) alt.href = gh; }
+  }
+
   try{
-    var ctrl = new AbortController();
-    var timer = setTimeout(function(){ ctrl.abort(); }, 6000);
-    fetch(CATALOG, {signal:ctrl.signal, cache:'no-store'})
+    var ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function(){ ctrl.abort(); }, 5000) : 0;
+    /* 带时间戳绕过 CDN 缓存，否则发版后最多十几分钟还显示旧号 */
+    fetch(PROBE + '?t=' + Date.now(), ctrl ? {signal:ctrl.signal, cache:'no-store'} : {cache:'no-store'})
       .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('bad status')); })
       .then(function(d){
         clearTimeout(timer);
-        if(!d || typeof d !== 'object') return;
-        var v = d.appLatestVersion, url = safeUrl(d.appDownloadUrl);
-        if(typeof v === 'string' && /^v?\d[\w.+-]{0,19}$/.test(v) && url){
-          var tag = v.charAt(0) === 'v' ? v : 'v' + v;
-          ['ver','verInline'].forEach(function(id){ var el = $(id); if(el) el.textContent = tag; });
-          /* 主下载按钮写死永久地址，不覆盖 href：发版后自动指向最新包。
-             备用按钮跟目录走国内线路，嫌 GitHub Pages 慢就点它。 */
-          if(url) $('dlAlt').href = url;
-        }
-        var size = Number(d.appDownloadSize);
-        if(size > 0 && size < 2147483648){
-          sizeReady = true;
-          countUp($('size'), size / 1048576, ' MB', 1000);
-        }
+        var v = d && String(d.appLatestVersion || '').trim();
+        /* 只认三段式版本号，异常值不参与拼链接，避免把按钮指向 404 */
+        if(!v || !/^\d+\.\d+\.\d+$/.test(v)) return;
+        applyVersion('v' + v);
       })
       .catch(function(){ clearTimeout(timer); });
   }catch(err){}
