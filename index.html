@@ -1,0 +1,568 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>砚中雪</title>
+<meta name="description" content="砚中雪，Android 上的软件库。">
+<meta name="theme-color" content="#07070a">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta property="og:type" content="website">
+<meta property="og:title" content="砚中雪">
+<meta property="og:description" content="Android 上的软件库。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23ffffff'/%3E%3Cpath d='M9 11h14M9 16h14M9 21h9' stroke='%2307070a' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --bg:#07070a;
+  --bg-2:#0c0c11;
+  --white:#f4f5f7;
+  --dim:#8b8f99;
+  --faint:#4a4e57;
+  --line:rgba(255,255,255,.1);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --ease-io:cubic-bezier(.76,0,.24,1);
+  --pad:clamp(28px,8vw,140px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--white);
+  font-family:"PingFang SC","Microsoft YaHei",Manrope,-apple-system,BlinkMacSystemFont,sans-serif;
+  font-size:16px;line-height:1.75;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+::selection{background:#fff;color:#000}
+:focus-visible{outline:2px solid var(--white);outline-offset:3px;border-radius:4px}
+svg{display:block}
+.mono{font-variant-numeric:tabular-nums}
+
+/* 首屏光场：固定在最底层，滚到浅色区被内容遮住 */
+#fx{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.grain{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;
+  background-image:radial-gradient(rgba(255,255,255,.11) .5px,transparent .5px);
+  background-size:3px 3px;mix-blend-mode:overlay;
+}
+.layer{position:relative;z-index:1}
+
+/* 进度线 */
+.progress{position:fixed;top:0;left:0;width:100%;height:1px;z-index:60;background:#fff;
+  transform:scaleX(0);transform-origin:0 50%;opacity:.8;mix-blend-mode:difference}
+
+/* 顶栏 */
+.nav{position:fixed;top:0;left:0;width:100%;z-index:50;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:clamp(18px,2.4vw,28px) var(--pad);
+  transition:background-color .5s var(--ease),backdrop-filter .5s var(--ease)}
+.nav.scrolled{background:rgba(7,7,10,.62);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600;letter-spacing:.14em}
+.brand span{width:22px;height:22px;border-radius:6px;background:var(--white);display:grid;place-items:center}
+.brand span svg{width:13px;height:13px}
+.nav__right{display:flex;align-items:center;gap:clamp(16px,2.6vw,40px);font-size:14px;color:var(--dim)}
+.nav__right a{position:relative;transition:color .3s var(--ease)}
+.nav__right a::after{content:"";position:absolute;left:0;bottom:-4px;width:100%;height:1px;background:currentColor;
+  transform:scaleX(0);transform-origin:0 50%;transition:transform .5s var(--ease)}
+.nav__right a:hover{color:var(--white)}
+.nav__right a:hover::after{transform:scaleX(1)}
+
+/* 首屏 */
+.hero{min-height:100svh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;padding:0 var(--pad);position:relative}
+.hero__top{font-size:12px;letter-spacing:.3em;color:var(--faint);text-transform:uppercase;margin-bottom:clamp(20px,3vw,36px)}
+.hero h1{font-size:clamp(64px,12vw,200px);line-height:1.02;font-weight:600;letter-spacing:-.045em}
+.hero h1 .row{display:block;overflow:hidden;padding-bottom:.06em;margin-bottom:-.06em}
+.hero h1 .row > span{display:block}
+/* 品类在上、品牌在下，字号拉开 4 倍，形成海报式的两行 */
+.hero h1 .kicker{font-size:.24em;font-weight:400;letter-spacing:.3em;color:var(--dim);line-height:2.2}
+.hero__bottom{display:flex;flex-direction:column;align-items:center;
+  gap:clamp(24px,3vw,36px);margin-top:clamp(40px,5vw,64px);max-width:560px}
+.hero__note{font-size:15px;line-height:1.9;color:var(--dim)}
+.hero__note b{color:var(--white);font-weight:500}
+.hero__cta{display:flex;align-items:center;justify-content:center;gap:clamp(16px,2vw,28px);flex-wrap:wrap}
+
+/* 主按钮：白底 + 光晕 */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 28px;border-radius:999px;
+  background:var(--white);color:#07070a;
+  font-size:15px;font-weight:600;letter-spacing:.01em;white-space:nowrap;
+  box-shadow:0 0 0 1px rgba(255,255,255,.5), 0 18px 60px rgba(130,160,255,.28);
+  transition:transform .55s var(--ease),box-shadow .55s var(--ease),background-color .3s var(--ease);
+}
+.btn svg{width:16px;height:16px}
+.btn:hover{transform:translateY(-3px);box-shadow:0 0 0 1px #fff, 0 26px 80px rgba(130,160,255,.42)}
+.btn:active{transform:scale(.985)}
+.btn--ghost{background:transparent;color:var(--white);box-shadow:inset 0 0 0 1px var(--line)}
+.btn--ghost:hover{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)}
+.hero__ver{font-size:13px;color:var(--faint);letter-spacing:.06em}
+
+/* 滚动提示 */
+.hero__scroll{position:absolute;left:50%;transform:translateX(-50%);bottom:clamp(20px,3vw,36px);
+  display:flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.24em;color:var(--faint)}
+.hero__scroll i{width:1px;height:36px;background:linear-gradient(var(--faint),transparent);display:block;
+  animation:drop 2.4s var(--ease) infinite}
+@keyframes drop{0%{transform:scaleY(0);transform-origin:top}45%{transform:scaleY(1);transform-origin:top}55%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* 滚动叙事：区域钉住，滚动驱动三条介绍逐条推入 */
+.story{position:relative;height:340vh}
+.story__sticky{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;
+  justify-content:center;padding:0 var(--pad);overflow:hidden}
+.story__stage{display:grid;flex:1;align-items:center}
+.story__panel{grid-area:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:clamp(28px,4vw,48px);opacity:0;will-change:transform,opacity}
+.story__num{font-size:12px;letter-spacing:.3em;color:var(--faint);font-variant-numeric:tabular-nums}
+.story__h{font-size:clamp(34px,5vw,64px);line-height:1.1;font-weight:600;letter-spacing:-.03em;margin-top:16px}
+.story__p{margin-top:20px;max-width:520px;font-size:16px;line-height:1.9;color:var(--dim);text-wrap:pretty}
+.story__vis{width:100%;max-width:520px;border:1px solid var(--line);border-radius:14px;padding:clamp(20px,3vw,30px);
+  background:rgba(255,255,255,.035);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.v-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.v-chips b,.v-chips span{font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid var(--line);color:var(--dim);font-weight:400}
+.v-chips b{background:var(--white);color:#07070a;border-color:var(--white);font-weight:600}
+.v-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);font-size:13px;color:var(--white)}
+.v-row:last-child{border-bottom:0}
+.v-row i{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.12);display:block;flex:none}
+.v-row em{margin-left:auto;font-style:normal;font-size:11px;color:var(--faint)}
+.v-bars{display:flex;flex-direction:column;gap:14px}
+.v-bar{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--faint)}
+.v-bar span{width:44px;flex:none;font-variant-numeric:tabular-nums}
+.v-bar b{flex:1;height:5px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;position:relative}
+.v-bar b::after{content:"";position:absolute;inset:0;width:100%;background:var(--white);border-radius:3px;
+  transform:scaleX(var(--v,.5));transform-origin:0 50%}
+.v-bar em{width:34px;text-align:right;font-style:normal;color:var(--dim);font-variant-numeric:tabular-nums}
+.v-card{border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;align-items:center;gap:14px}
+.v-card i{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.12);display:block;flex:none}
+.v-card div{flex:1;min-width:0}
+.v-card b{display:block;font-size:13px;font-weight:600}
+.v-card small{font-size:11px;color:var(--faint)}
+.v-card u{text-decoration:none;font-size:11px;padding:5px 12px;border-radius:999px;background:var(--white);color:#07070a;font-weight:600}
+.story__bar{display:flex;gap:8px;margin:36px auto 0;width:100%;max-width:420px}
+.story__bar i{flex:1;height:1px;background:var(--faint);opacity:.28;transition:opacity .4s var(--ease),background-color .4s var(--ease)}
+.story__bar i.on{background:var(--white);opacity:1}
+
+/* 大字：深色底上逐词点亮 */
+.statement{padding:clamp(120px,18vw,260px) var(--pad);text-align:center;
+  background:linear-gradient(180deg,rgba(7,7,10,0),rgba(7,7,10,.86) 22%,#07070a 100%)}
+.statement__text{max-width:1000px;margin:0 auto;font-size:clamp(30px,5.4vw,72px);line-height:1.24;
+  font-weight:500;letter-spacing:-.03em}
+.statement__text .w{color:#2b2e36;transition:color .7s var(--ease)}
+.statement__text .w.on{color:var(--white)}
+
+/* 下载：浅色落地 */
+.download{background:var(--white);color:#07070a;padding:clamp(96px,14vw,180px) var(--pad) clamp(72px,9vw,120px)}
+.download__in{max-width:1100px;margin:0 auto}
+.download h2{font-size:clamp(40px,7vw,96px);line-height:1;font-weight:600;letter-spacing:-.04em}
+.download__meta{margin-top:24px;font-size:15px;color:#6a6e78;letter-spacing:.02em}
+.download__actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px;margin-top:clamp(32px,5vw,56px)}
+.btn--dark{background:#07070a;color:var(--white);box-shadow:0 18px 50px rgba(7,7,10,.24)}
+.btn--dark:hover{background:#000;box-shadow:0 26px 70px rgba(7,7,10,.32)}
+.btn--line{background:transparent;color:#07070a;box-shadow:inset 0 0 0 1px #d5d6d3}
+.btn--line:hover{background:rgba(7,7,10,.04);box-shadow:inset 0 0 0 1px #a9aaa6}
+.download__tip{margin-top:32px;font-size:13px;color:#8b8f99}
+
+/* 页脚 */
+.footer{background:var(--white);color:#07070a;padding:0 var(--pad) clamp(28px,4vw,44px)}
+.footer__in{max-width:1100px;margin:0 auto;padding-top:28px;border-top:1px solid #e3e4e0;
+  display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center;justify-content:center;
+  font-size:12px;color:#8b8f99;letter-spacing:.04em;text-align:center}
+.footer__links{display:flex;gap:24px}
+.footer__links a:hover{color:#07070a}
+
+/* 入场：只有首帧就带上 js 类时才隐藏，脚本没跑则元素保持可见 */
+html.js [data-in]{opacity:0}
+
+/* 平板：竖屏 768/820 与横屏 1024，叙事区改单列、按钮换行 */
+@media (max-width:1024px){
+  .hero h1{font-size:clamp(48px,13vw,130px)}
+  .hero__bottom{gap:32px}
+  .hero__note{max-width:460px}
+  .story__panel{gap:36px}
+  .story__h{font-size:clamp(30px,4.6vw,44px)}
+  .story__p{max-width:460px}
+  .statement__text{font-size:clamp(28px,5vw,48px)}
+  .download h2{font-size:clamp(36px,6vw,60px)}
+}
+@media (max-width:760px){
+  .nav__right{display:none}
+  .hero h1{font-size:18vw}
+  .hero h1 .en{display:none}
+  .hero h1 .thin{font-size:.62em}
+  .hero{min-height:100svh}
+  .hero__bottom{flex-direction:column;align-items:stretch;gap:24px}
+  .hero__note{max-width:100%}
+  .hero__cta{width:100%;flex-direction:column;align-items:stretch;gap:20px}
+  .hero__cta .btn{width:100%;justify-content:center}
+  .hero__ver{text-align:center}
+  .hero__scroll{display:none}
+  .story{height:300vh}
+  .story__panel{grid-template-columns:1fr;gap:28px;align-content:center}
+  .story__p{font-size:15px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  [data-in]{opacity:1!important}
+  .statement__text .w{color:var(--white)}
+  .progress{display:none}
+  .story{height:auto}
+  .story__sticky{position:static;height:auto;padding:96px 0}
+  .story__stage{display:block}
+  .story__panel{opacity:1!important;transform:none!important;margin-bottom:72px}
+  .story__bar{display:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="fx" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+<div class="progress" id="progress" aria-hidden="true"></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top">
+    <span><svg viewBox="0 0 24 24" fill="none" stroke="#07070a" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></span>
+    砚中雪
+  </a>
+  <div class="nav__right">
+    <a href="https://github.com/chuanhongyue1/yzw-data" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    <a href="#download">下载</a>
+  </div>
+</header>
+
+<main id="top" class="layer">
+  <section class="hero">
+        <h1>
+          <span class="row"><span class="kicker" data-line>Android 软件库</span></span>
+          <span class="row"><span data-line>砚中雪</span></span>
+        </h1>
+    <div class="hero__bottom">
+      <p class="hero__note" data-in>没有账号，没有设置页。<b>打开就是软件库</b>，装完就放在那儿。</p>
+      <div class="hero__cta" data-in>
+        <a class="btn" id="heroDl" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v1.6.8/app-arm64-v8a-release.apk">
+          下载 APK
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
+        </a>
+        <span class="hero__ver"><span id="verInline" class="mono">v1.6.8</span> · arm64</span>
+      </div>
+    </div>
+    <div class="hero__scroll" aria-hidden="true"><i></i>Scroll</div>
+  </section>
+
+  <section class="story" id="story">
+    <div class="story__sticky">
+      <div class="story__stage">
+        <div class="story__panel">
+          <div>
+            <p class="story__num">01 / 03</p>
+            <h2 class="story__h">按分类找</h2>
+            <p class="story__p">按类别浏览，也能直接搜名字。详情页里有图标、截图和版本说明。</p>
+          </div>
+          <div class="story__vis" aria-hidden="true">
+            <div class="v-chips"><b>全部</b><span>工具</span><span>效率</span><span>阅读</span></div>
+            <div class="v-row"><i></i><span>文件管理器</span><em>工具</em></div>
+            <div class="v-row"><i></i><span>浏览器</span><em>效率</em></div>
+            <div class="v-row"><i></i><span>阅读器</span><em>阅读</em></div>
+          </div>
+        </div>
+        <div class="story__panel">
+          <div>
+            <p class="story__num">02 / 03</p>
+            <h2 class="story__h">下载不用守着</h2>
+            <p class="story__p">大文件分成几路一起拉，进度留在本机。中途断了接着下，不用从头再来。</p>
+          </div>
+          <div class="story__vis" aria-hidden="true">
+            <div class="v-bars">
+              <div class="v-bar"><span>一路</span><b style="--v:1"></b><em>100%</em></div>
+              <div class="v-bar"><span>二路</span><b style="--v:.86"></b><em>86%</em></div>
+              <div class="v-bar"><span>三路</span><b style="--v:.72"></b><em>72%</em></div>
+            </div>
+          </div>
+        </div>
+        <div class="story__panel">
+          <div>
+            <p class="story__num">03 / 03</p>
+            <h2 class="story__h">在应用里升级</h2>
+            <p class="story__p">检测到新版本就在应用里装完，覆盖安装，原来的数据不动。</p>
+          </div>
+          <div class="story__vis" aria-hidden="true">
+            <div class="v-card"><i></i><div><b>砚中雪</b><small>发现新版本</small></div><u>更新</u></div>
+          </div>
+        </div>
+      </div>
+      <div class="story__bar" aria-hidden="true"><i></i><i></i><i></i></div>
+    </div>
+  </section>
+
+  <section class="statement">
+    <p class="statement__text" id="tagline">该点的点完，<br>剩下的它自己做。</p>
+  </section>
+
+  <section class="download" id="download">
+    <div class="download__in">
+      <h2>装上砚中雪</h2>
+      <p class="download__meta"><span id="ver" class="mono">v1.6.8</span> · 约 <span id="size" class="mono">31.8 MB</span> · Android 8.0 及以上</p>
+      <div class="download__actions">
+        <a class="btn btn--dark" id="dlMain" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v1.6.8/app-arm64-v8a-release.apk">
+          下载 APK
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
+        </a>
+        <a class="btn btn--line" id="dlAlt" href="https://github.com/chuanhongyue1/yzw-data/releases/download/v1.6.8/app-arm64-v8a-release.apk" target="_blank" rel="noopener noreferrer">GitHub 备用</a>
+      </div>
+      <p class="download__tip">装过旧版直接覆盖，数据保留。</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer__in">
+      <span>© 2026 砚中雪</span>
+      <div class="footer__links">
+        <a href="#top">回到顶部</a>
+        <a href="#download">下载</a>
+        <a href="https://github.com/chuanhongyue1/yzw-data" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script>
+(function(){
+  'use strict';
+  document.documentElement.classList.add('js-ready');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function(id){ return document.getElementById(id); };
+  var EASE = 'cubic-bezier(.16,1,.3,1)';
+  var EASE_IO = 'cubic-bezier(.76,0,.24,1)';
+
+  /* 下载域白名单：只允许实际在用的仓库 */
+  function safeUrl(u){
+    if(typeof u !== 'string' || u.length > 512) return null;
+    var p;
+    try{ p = new URL(u); }catch(e){ return null; }
+    if(p.protocol !== 'https:') return null;
+    var h = p.hostname.toLowerCase(), ok;
+    if(h === 'gitee.com') ok = /^\/chuanhongyue123456\/chuanshaoapp\//i.test(p.pathname);
+    else if(h === 'github.com') ok = /^\/chuanhongyue1\/yzw-data\//i.test(p.pathname);
+    else if(h === 'github.io' || h.slice(-10) === '.github.io') ok = /^\/yzw-data\//i.test(p.pathname);
+    else return null;
+    return ok ? p.href : null;
+  }
+
+  /* ---- 首屏光场：几个缓慢漂移的彩色球，鼠标带一点偏移 ---- */
+  var fx = $('fx'), ctx = fx && fx.getContext ? fx.getContext('2d') : null;
+  var mouse = {x:.62, y:.42, tx:.62, ty:.42};
+  var orbs = [
+    {x:.22, y:.30, r:.56, h:220, s:94, l:60, a:.52, vx: .000021, vy: .000013},
+    {x:.70, y:.26, r:.50, h:268, s:92, l:62, a:.44, vx:-.000017, vy: .000019},
+    {x:.48, y:.66, r:.58, h:188, s:90, l:56, a:.38, vx: .000013, vy:-.000016},
+    {x:.86, y:.72, r:.44, h:322, s:88, l:58, a:.30, vx:-.000024, vy: .000011}
+  ];
+  var W = 0, H = 0, DPR = 1, fxRaf = 0, fxOn = false;
+
+  function fxResize(){
+    DPR = Math.min(window.devicePixelRatio || 1, 1.6);
+    W = fx.width = Math.round(window.innerWidth * DPR);
+    H = fx.height = Math.round(window.innerHeight * DPR);
+    fx.style.width = window.innerWidth + 'px';
+    fx.style.height = window.innerHeight + 'px';
+  }
+  function fxFrame(t){
+    ctx.clearRect(0, 0, W, H);
+    ctx.globalCompositeOperation = 'lighter';
+    mouse.x += (mouse.tx - mouse.x) * .045;
+    mouse.y += (mouse.ty - mouse.y) * .045;
+    var base = Math.min(W, H);
+    for(var i = 0; i < orbs.length; i++){
+      var o = orbs[i];
+      o.x += o.vx * 16; o.y += o.vy * 16;
+      if(o.x < -0.15) o.x = 1.15; if(o.x > 1.15) o.x = -0.15;
+      if(o.y < -0.15) o.y = 1.15; if(o.y > 1.15) o.y = -0.15;
+      var cx = (o.x + (mouse.x - .5) * .06) * W;
+      var cy = (o.y + (mouse.y - .5) * .06) * H;
+      var rad = o.r * base;
+      var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, rad);
+      g.addColorStop(0, 'hsla(' + o.h + ',' + o.s + '%,' + o.l + '%,' + o.a + ')');
+      g.addColorStop(.55, 'hsla(' + o.h + ',' + o.s + '%,' + (o.l - 8) + '%,' + (o.a * .34) + ')');
+      g.addColorStop(1, 'hsla(' + o.h + ',' + o.s + '%,' + (o.l - 14) + '%,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    if(fxOn) fxRaf = requestAnimationFrame(fxFrame);
+  }
+  function fxStart(){ if(!fxOn){ fxOn = true; fxRaf = requestAnimationFrame(fxFrame); } }
+  function fxStop(){ fxOn = false; if(fxRaf) cancelAnimationFrame(fxRaf); }
+
+  if(ctx && !reduce){
+    fxResize(); fxStart();
+    window.addEventListener('resize', fxResize, {passive:true});
+    window.addEventListener('pointermove', function(e){
+      mouse.tx = e.clientX / window.innerWidth;
+      mouse.ty = e.clientY / window.innerHeight;
+    }, {passive:true});
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden) fxStop(); else fxStart();
+    });
+    /* 滚出首屏就停，省电 */
+    var heroEl0 = document.querySelector('.hero');
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(es){
+        if(es[0].isIntersecting) fxStart(); else fxStop();
+      }, {threshold:0}).observe(heroEl0);
+    }
+  } else if(ctx){
+    /* 关闭动效时留一张静态渐变 */
+    fxResize();
+    var g = ctx.createRadialGradient(W * .32, H * .34, 0, W * .32, H * .34, Math.min(W, H) * .7);
+    g.addColorStop(0, 'hsla(222,92%,62%,.26)');
+    g.addColorStop(1, 'hsla(222,92%,62%,0)');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    window.addEventListener('resize', function(){
+      fxResize();
+      var g2 = ctx.createRadialGradient(W * .32, H * .34, 0, W * .32, H * .34, Math.min(W, H) * .7);
+      g2.addColorStop(0, 'hsla(222,92%,62%,.26)');
+      g2.addColorStop(1, 'hsla(222,92%,62%,0)');
+      ctx.fillStyle = g2; ctx.fillRect(0, 0, W, H);
+    }, {passive:true});
+  }
+
+  /* ---- 入场时间线 ---- */
+  if(!reduce && typeof Element !== 'undefined' && Element.prototype.animate){
+    Array.prototype.forEach.call(document.querySelectorAll('[data-line]'), function(el, i){
+      el.animate([{transform:'translate3d(0,110%,0)'}, {transform:'translate3d(0,0,0)'}],
+        {duration:1300, delay:120 + i * 150, easing:EASE_IO, fill:'both'});
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-in]'), function(el, i){
+      el.animate([{opacity:0, transform:'translate3d(0,26px,0)'}, {opacity:1, transform:'translate3d(0,0,0)'}],
+        {duration:1000, delay:360 + i * 120, easing:EASE, fill:'both'});
+    });
+  }
+
+  /* ---- 滚动：进度线 / 顶栏 / 首屏视差 ---- */
+  var progress = $('progress'), nav = $('nav');
+  var titleEl = document.querySelector('.hero h1'), noteEl = document.querySelector('.hero__bottom');
+  var ticking = false, maxScroll = 1;
+  function measure(){ maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight); }
+  var storyEl = $('story'), panels = document.querySelectorAll('.story__panel'),
+      storyBars = document.querySelectorAll('.story__bar i');
+  function storyFrame(){
+    if(!storyEl || !panels.length || reduce) return;
+    var r = storyEl.getBoundingClientRect();
+    var total = storyEl.offsetHeight - window.innerHeight;
+    if(total <= 0) return;
+    var p = Math.max(0, Math.min(1, -r.top / total));
+    var pos = p * (panels.length - 1);
+    for(var i = 0; i < panels.length; i++){
+      var d = pos - i;
+      panels[i].style.opacity = Math.max(0, 1 - Math.abs(d) * 1.15).toFixed(3);
+      panels[i].style.transform = 'translate3d(0,' + (d * -36).toFixed(1) + 'px,0) scale(' + (1 - Math.abs(d) * .03).toFixed(3) + ')';
+    }
+    for(var j = 0; j < storyBars.length; j++){
+      storyBars[j].classList.toggle('on', pos >= j - .02);
+    }
+  }
+  function onFrame(){
+    ticking = false;
+    var y = window.pageYOffset || 0;
+    if(progress) progress.style.transform = 'scaleX(' + Math.min(1, y / maxScroll).toFixed(4) + ')';
+    if(nav) nav.classList.toggle('scrolled', y > 20);
+    if(!reduce){
+      var vh = window.innerHeight;
+      var k = Math.min(1, y / vh);
+      if(titleEl) titleEl.style.transform = 'translate3d(0,' + (-k * 90).toFixed(1) + 'px,0)';
+      if(noteEl){
+        noteEl.style.transform = 'translate3d(0,' + (-k * 40).toFixed(1) + 'px,0)';
+        noteEl.style.opacity = (1 - k * .9).toFixed(2);
+      }
+    }
+    storyFrame();
+  }
+  window.addEventListener('scroll', function(){
+    if(!ticking){ ticking = true; requestAnimationFrame(onFrame); }
+  }, {passive:true});
+  window.addEventListener('resize', function(){ measure(); onFrame(); }, {passive:true});
+  measure(); onFrame();
+
+  /* ---- 大字逐词点亮 ---- */
+  try{
+    var tagline = $('tagline');
+    if(tagline && !reduce){
+      var parts = tagline.innerHTML.split(/(<br\s*\/?>)/i);
+      tagline.innerHTML = parts.map(function(chunk){
+        if(/^<br/i.test(chunk)) return chunk;
+        var ws = chunk.match(/[\u4e00-\u9fa5]{1,2}|[^\u4e00-\u9fa5<>\s]+|[，。、]/g) || [];
+        return ws.map(function(w){ return '<span class="w">' + w + '</span>'; }).join('');
+      }).join('');
+      var words = tagline.querySelectorAll('.w'), wtick = false;
+      var paint = function(){
+        wtick = false;
+        var line = window.innerHeight * .78;
+        Array.prototype.forEach.call(words, function(w){
+          if(w.getBoundingClientRect().top < line) w.classList.add('on');
+        });
+      };
+      window.addEventListener('scroll', function(){
+        if(!wtick){ wtick = true; requestAnimationFrame(paint); }
+      }, {passive:true});
+      window.addEventListener('resize', paint, {passive:true});
+      paint();
+    }
+  }catch(e){}
+
+  /* ---- 数字滚动 ---- */
+  var sizeToken = 0, sizeReady = false;
+  function countUp(el, target, suffix, dur){
+    if(!el) return;
+    var my = ++sizeToken;
+    if(reduce){ el.textContent = target.toFixed(1) + suffix; return; }
+    var t0 = performance.now();
+    function step(now){
+      if(my !== sizeToken) return;
+      var t = Math.min(1, (now - t0) / dur);
+      var e = t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
+      el.textContent = (target * e).toFixed(1) + suffix;
+      if(t < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  setTimeout(function(){ if(!sizeReady) countUp($('size'), 31.8, ' MB', 1000); }, 1400);
+
+  /* ---- 线上目录：版本号与下载地址 ---- */
+  var CATALOG = 'https://chuanhongyue1.github.io/yzw-data/catalog.json';
+  try{
+    var ctrl = new AbortController();
+    var timer = setTimeout(function(){ ctrl.abort(); }, 6000);
+    fetch(CATALOG, {signal:ctrl.signal, cache:'no-store'})
+      .then(function(r){ return r.ok ? r.json() : Promise.reject(new Error('bad status')); })
+      .then(function(d){
+        clearTimeout(timer);
+        if(!d || typeof d !== 'object') return;
+        var v = d.appLatestVersion, url = safeUrl(d.appDownloadUrl);
+        if(typeof v === 'string' && /^v?\d[\w.+-]{0,19}$/.test(v) && url){
+          var tag = v.charAt(0) === 'v' ? v : 'v' + v;
+          ['ver','verInline'].forEach(function(id){ var el = $(id); if(el) el.textContent = tag; });
+          $('dlMain').href = url;
+          $('heroDl').href = url;
+          var mirrors = d.appDownloadMirrors, ok = [];
+          if(Array.isArray(mirrors)){
+            for(var i = 0; i < mirrors.length; i++){
+              var m = safeUrl(mirrors[i]);
+              if(m) ok.push(m);
+            }
+            var pick = ok.filter(function(u){ return new URL(u).hostname === 'github.com'; })[0] || ok[0];
+            if(pick) $('dlAlt').href = pick;
+          }
+        }
+        var size = Number(d.appDownloadSize);
+        if(size > 0 && size < 2147483648){
+          sizeReady = true;
+          countUp($('size'), size / 1048576, ' MB', 1000);
+        }
+      })
+      .catch(function(){ clearTimeout(timer); });
+  }catch(err){}
+})();
+</script>
+</body>
+</html>
