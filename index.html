@@ -601,6 +601,8 @@ html.js [data-in]{opacity:0}
   function applyVersion(tag){
     var gitee = safeUrl(GITEE_DL + tag + '/' + APK_NAME);
     var gh = safeUrl(GH_DL + tag + '/' + APK_NAME);
+    /* 打上标记：区分「拿到线上版本」和「还是页面里写死的兜底值」，排查时一眼可见 */
+    document.documentElement.setAttribute('data-version', tag);
     ['ver', 'verInline'].forEach(function(id){ var el = $(id); if(el) el.textContent = tag; });
     if(gitee){
       ['heroDl', 'dlMain'].forEach(function(id){ var el = $(id); if(el) el.href = gitee; });
