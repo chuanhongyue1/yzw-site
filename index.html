@@ -308,7 +308,7 @@ html.js [data-in]{opacity:0}
           下载 APK
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
         </a>
-        <a class="btn btn--line" id="dlAlt" href="https://github.com/chuanhongyue1/yzw-data/releases/download/v1.6.8/app-arm64-v8a-release.apk" target="_blank" rel="noopener noreferrer">GitHub 备用</a>
+        <a class="btn btn--line" id="dlAlt" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases" target="_blank" rel="noopener noreferrer">发布页备用</a>
       </div>
       <p class="download__tip">装过旧版直接覆盖，数据保留。</p>
     </div>
@@ -544,14 +544,16 @@ html.js [data-in]{opacity:0}
           ['ver','verInline'].forEach(function(id){ var el = $(id); if(el) el.textContent = tag; });
           $('dlMain').href = url;
           $('heroDl').href = url;
-          var mirrors = d.appDownloadMirrors, ok = [];
+          /* 备用只认 Gitee 上的其它直链；GitHub 在国内太慢，不再拿来做备用 */
+          var mirrors = d.appDownloadMirrors;
           if(Array.isArray(mirrors)){
             for(var i = 0; i < mirrors.length; i++){
               var m = safeUrl(mirrors[i]);
-              if(m) ok.push(m);
+              if(m && new URL(m).hostname === 'gitee.com' && m !== url){
+                $('dlAlt').href = m;
+                break;
+              }
             }
-            var pick = ok.filter(function(u){ return new URL(u).hostname === 'github.com'; })[0] || ok[0];
-            if(pick) $('dlAlt').href = pick;
           }
         }
         var size = Number(d.appDownloadSize);
