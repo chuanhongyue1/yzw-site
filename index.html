@@ -180,17 +180,25 @@ svg{display:block}
 .other{max-width:720px;margin:clamp(44px,6vw,66px) auto 0;padding-top:clamp(26px,4vw,38px);
   border-top:1px solid #e8e9e6;text-align:left}
 .other__label{text-align:center;font-size:12px;letter-spacing:.16em;color:#9a9ea6;margin-bottom:18px}
-.other__card{display:flex;align-items:center;gap:16px;padding:18px 20px;
+.other__card{padding:20px 22px;
   border:1px solid #e6e7e3;border-radius:16px;background:#fafaf8;
   transition:border-color .4s var(--ease),background-color .4s var(--ease)}
 .other__card:hover{border-color:#d8d9d4;background:#f7f7f4}
+.other__head{display:flex;align-items:center;gap:16px}
 .other__icon{width:52px;height:52px;flex:none;border-radius:14px;background:#07070a;color:#fff;
   display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;letter-spacing:.02em}
-.other__text{flex:1;min-width:0}
+.other__title{flex:1;min-width:0}
 .other__h{font-size:16px;font-weight:600;letter-spacing:-.01em;color:#07070a}
-.other__p{margin-top:5px;font-size:13px;line-height:1.65;color:#6a6e78}
-.other__meta{margin-top:7px;font-size:12px;color:#9a9ea6;font-variant-numeric:tabular-nums}
-.other__card .btn{padding:12px 24px;font-size:14px;flex:none;box-shadow:0 4px 14px rgba(7,7,10,.16)}
+.other__meta{margin-top:5px;font-size:12px;color:#9a9ea6;font-variant-numeric:tabular-nums}
+.other__desc{margin-top:16px;padding-top:16px;border-top:1px solid #eceae4;
+  font-size:13px;line-height:1.85;color:#5f6368;text-wrap:pretty}
+.other__link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;
+  font-size:12px;color:#7b8089;text-decoration:none;
+  border-bottom:1px solid #dcddd8;padding-bottom:2px;
+  transition:color .3s var(--ease),border-color .3s var(--ease)}
+.other__link:hover{color:#07070a;border-color:#07070a}
+.other__link svg{width:11px;height:11px;flex:none}
+.other__head .btn{padding:12px 24px;font-size:14px;flex:none;box-shadow:0 4px 14px rgba(7,7,10,.16)}
 
 /* 软件使用声明：默认收起，只占一行，点开看全文；不依赖脚本，禁用 JS 也能展开 */
 .legal{max-width:760px;margin:clamp(52px,7vw,80px) auto 0;padding-top:clamp(28px,4vw,40px);
@@ -248,8 +256,9 @@ html.js [data-in]{opacity:0}
   .story__panel{gap:28px}
   .story__p{font-size:15px}
   .icons__row{grid-template-columns:repeat(4,max-content)}
-  .other__card{flex-wrap:wrap;padding:16px;gap:14px}
-  .other__card .btn{flex:1 1 100%;justify-content:center}
+  .other__card{padding:16px}
+  .other__head{flex-wrap:wrap;gap:14px}
+  .other__head .btn{flex:1 1 100%;justify-content:center}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -384,13 +393,18 @@ html.js [data-in]{opacity:0}
       <div class="other" id="yichu">
         <p class="other__label">另一个软件</p>
         <div class="other__card">
-          <div class="other__icon" aria-hidden="true">一触</div>
-          <div class="other__text">
-            <p class="other__h">一触</p>
-            <p class="other__p">安卓上的自动点击器，重复的点击和滑动交给它。</p>
-            <p class="other__meta">v5.64.98 · 约 0.9 MB · 仅 Android</p>
+          <div class="other__head">
+            <div class="other__icon" aria-hidden="true">一触</div>
+            <div class="other__title">
+              <p class="other__h">一触</p>
+              <p class="other__meta">v5.64.98 · 约 0.9 MB · 仅 Android</p>
+            </div>
+            <a class="btn btn--dark" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v5.64.98/qingdian.apk" target="_blank" rel="noopener noreferrer">下载</a>
           </div>
-          <a class="btn btn--dark" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v5.64.98/qingdian.apk" target="_blank" rel="noopener noreferrer">下载</a>
+          <p class="other__desc">一触是个自动点击器：把需要重复的点击和滑动排成一组，让它按顺序自己执行，不用一直守着屏幕。需要反复点同一个位置，或者一步步走固定流程的时候，用它省事。</p>
+          <a class="other__link" href="https://gitee.com/chuanhongyue123456/chuanshaoapp" target="_blank" rel="noopener noreferrer">项目地址
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+          </a>
         </div>
       </div>
 
