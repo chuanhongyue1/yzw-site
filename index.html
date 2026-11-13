@@ -124,12 +124,12 @@ svg{display:block}
 .icons__more:hover{border-color:rgba(255,255,255,.3);color:#fff;transform:translateY(-2px)}
 .icons__more b{color:#fff;font-weight:500}
 
-.story{position:relative;height:340vh}
-.story__sticky{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;
-  justify-content:center;padding:0 var(--pad);overflow:hidden}
-.story__stage{display:grid;flex:1;align-items:center}
-.story__panel{grid-area:1/1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;gap:clamp(28px,4vw,48px);opacity:0;will-change:transform,opacity}
+/* 介绍：普通上下排列，滚到哪儿看哪儿，不做滚动钉住翻页 */
+.story{padding:clamp(88px,12vw,150px) var(--pad)}
+.story__sticky{max-width:1100px;margin:0 auto}
+.story__stage{display:flex;flex-direction:column;gap:clamp(76px,10vw,118px)}
+.story__panel{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:clamp(28px,4vw,48px)}
 .story__num{font-size:12px;letter-spacing:.3em;color:var(--faint);font-variant-numeric:tabular-nums}
 .story__h{font-size:clamp(34px,5vw,64px);line-height:1.1;font-weight:600;letter-spacing:-.03em;margin-top:16px}
 .story__p{margin-top:20px;max-width:520px;font-size:16px;line-height:1.9;color:var(--dim);text-wrap:pretty}
@@ -155,10 +155,6 @@ svg{display:block}
 .v-card b{display:block;font-size:13px;font-weight:600}
 .v-card small{font-size:11px;color:var(--faint)}
 .v-card u{text-decoration:none;font-size:11px;padding:5px 12px;border-radius:999px;background:var(--white);color:#07070a;font-weight:600}
-.story__bar{display:flex;gap:8px;margin:36px auto 0;width:100%;max-width:420px}
-.story__bar i{flex:1;height:1px;background:var(--dim);opacity:.45;transition:opacity .4s var(--ease),background-color .4s var(--ease)}
-.story__bar i.on{background:var(--white);opacity:1}
-
 /* 大字：深色底上逐词点亮 */
 .statement{padding:clamp(120px,18vw,260px) var(--pad);text-align:center;
   background:linear-gradient(180deg,rgba(7,7,10,0),rgba(7,7,10,.86) 22%,#07070a 100%)}
@@ -232,8 +228,8 @@ html.js [data-in]{opacity:0}
   .hero__cta .btn{width:100%;justify-content:center}
   .hero__ver{text-align:center}
   .hero__scroll{display:none}
-  .story{height:300vh}
-  .story__panel{grid-template-columns:1fr;gap:28px;align-content:center}
+  .story__stage{gap:64px}
+  .story__panel{gap:28px}
   .story__p{font-size:15px}
   .icons__row{grid-template-columns:repeat(4,max-content)}
 }
@@ -243,11 +239,6 @@ html.js [data-in]{opacity:0}
   [data-in]{opacity:1!important}
   .statement__text .w{color:var(--white)}
   .progress{display:none}
-  .story{height:auto}
-  .story__sticky{position:static;height:auto;padding:96px 0}
-  .story__stage{display:block}
-  .story__panel{opacity:1!important;transform:none!important;margin-bottom:72px}
-  .story__bar{display:none}
 }
 </style>
 </head>
@@ -277,8 +268,8 @@ html.js [data-in]{opacity:0}
     <div class="hero__bottom">
       <p class="hero__note" data-in>一百多个 Android 软件，工具、影音、阅读、游戏都有。不用注册，<b>点开就能下</b>。</p>
       <div class="hero__cta" data-in>
-        <!-- 兜底地址：页面加载后会用 version.json 里的最新版本号改写，这里只是没网/超时时的退路 -->
-        <a class="btn" id="heroDl" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v1.6.9/app-arm64-v8a-release.apk">
+        <!-- 永久地址：文件名固定，每次发版覆盖同名文件，地址永远不用换 -->
+        <a class="btn" id="heroDl" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk">
           下载 APK
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
         </a>
@@ -351,7 +342,6 @@ html.js [data-in]{opacity:0}
           </div>
         </div>
       </div>
-      <div class="story__bar" aria-hidden="true"><i></i><i></i><i></i></div>
     </div>
   </section>
 
@@ -364,12 +354,11 @@ html.js [data-in]{opacity:0}
       <h2>装上砚中雪</h2>
       <p class="download__meta"><span id="ver" class="mono">v1.6.9</span> · 约 <span id="size" class="mono">31.8 MB</span> · 仅 Android 8.0 及以上</p>
       <div class="download__actions">
-        <a class="btn btn--dark" id="dlMain" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v1.6.9/app-arm64-v8a-release.apk">
+        <a class="btn btn--dark" id="dlMain" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk">
           下载 APK
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
         </a>
-        <!-- 永久地址：文件名固定，每次发版覆盖同名文件，链接永远不用变 -->
-        <a class="btn btn--line" id="dlAlt" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk" target="_blank" rel="noopener noreferrer">永久地址</a>
+        <a class="btn btn--line" id="dlAlt" href="https://github.com/chuanhongyue1/yzw-site" target="_blank" rel="noopener noreferrer">GitHub 项目</a>
       </div>
       <p class="download__tip"><b>只有安卓版</b>，没有 iOS、Windows、macOS。装过旧版直接覆盖，数据保留。</p>
 
@@ -408,20 +397,6 @@ html.js [data-in]{opacity:0}
   var $ = function(id){ return document.getElementById(id); };
   var EASE = 'cubic-bezier(.16,1,.3,1)';
   var EASE_IO = 'cubic-bezier(.76,0,.24,1)';
-
-  /* 下载域白名单：只允许实际在用的仓库 */
-  function safeUrl(u){
-    if(typeof u !== 'string' || u.length > 512) return null;
-    var p;
-    try{ p = new URL(u); }catch(e){ return null; }
-    if(p.protocol !== 'https:') return null;
-    var h = p.hostname.toLowerCase(), ok;
-    if(h === 'gitee.com') ok = /^\/chuanhongyue123456\/chuanshaoapp\/releases\/download\//i.test(p.pathname);
-    else if(h === 'github.com') ok = /^\/chuanhongyue1\/yzw-data\//i.test(p.pathname);
-    else if(h === 'github.io' || h.slice(-10) === '.github.io') ok = /^\/yzw-data\//i.test(p.pathname);
-    else return null;
-    return ok ? p.href : null;
-  }
 
   /* ---- 首屏光场：几个缓慢漂移的彩色球，鼠标带一点偏移 ---- */
   var fx = $('fx'), ctx = fx && fx.getContext ? fx.getContext('2d') : null;
@@ -536,27 +511,6 @@ html.js [data-in]{opacity:0}
   var titleEl = document.querySelector('.hero h1'), noteEl = document.querySelector('.hero__bottom');
   var ticking = false, maxScroll = 1;
   function measure(){ maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight); }
-  var storyEl = $('story'), panels = document.querySelectorAll('.story__panel'),
-      storyBars = document.querySelectorAll('.story__bar i');
-  function storyFrame(){
-    if(!storyEl || !panels.length || reduce) return;
-    var r = storyEl.getBoundingClientRect();
-    var total = storyEl.offsetHeight - window.innerHeight;
-    if(total <= 0) return;
-    var p = Math.max(0, Math.min(1, -r.top / total));
-    var pos = p * (panels.length - 1);
-    /* 手机上只做淡入淡出：一屏内又是位移又是缩放，文字会上下滑动，看着花 */
-    var simple = window.innerWidth <= 760;
-    for(var i = 0; i < panels.length; i++){
-      var d = pos - i;
-      panels[i].style.opacity = Math.max(0, 1 - Math.abs(d) * 1.15).toFixed(3);
-      panels[i].style.transform = simple ? 'none'
-        : 'translate3d(0,' + (d * -36).toFixed(1) + 'px,0) scale(' + (1 - Math.abs(d) * .03).toFixed(3) + ')';
-    }
-    for(var j = 0; j < storyBars.length; j++){
-      storyBars[j].classList.toggle('on', pos >= j - .02);
-    }
-  }
   function onFrame(){
     ticking = false;
     var y = window.pageYOffset || 0;
@@ -571,7 +525,6 @@ html.js [data-in]{opacity:0}
         noteEl.style.opacity = (1 - k * .9).toFixed(2);
       }
     }
-    storyFrame();
   }
   window.addEventListener('scroll', function(){
     if(!ticking){ ticking = true; requestAnimationFrame(onFrame); }
@@ -635,19 +588,13 @@ html.js [data-in]{opacity:0}
   /* ---- 版本探针：只取几十字节的 version.json，页面显示永远跟最新发行版一致 ----
      以前拉 catalog.json（8MB）只为读一个版本号，太亏；探针文件就一句话。 */
   var PROBE = 'https://chuanhongyue1.github.io/yzw-data/version.json';
-  var GITEE_DL = 'https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/';
-  var APK_NAME = 'app-arm64-v8a-release.apk';
 
+  /* 只改版本号文字。下载按钮走文件名固定的永久地址，发版时覆盖同名文件，
+     链接本身不用换，所以这里不去动 href。 */
   function applyVersion(tag){
-    var gitee = safeUrl(GITEE_DL + tag + '/' + APK_NAME);
     /* 打上标记：区分「拿到线上版本」和「还是页面里写死的兜底值」，排查时一眼可见 */
     document.documentElement.setAttribute('data-version', tag);
     ['ver', 'verInline'].forEach(function(id){ var el = $(id); if(el) el.textContent = tag; });
-    /* 主下载走 Gitee 的版本直链，国内快；备用是文件名固定的永久地址，
-       与版本无关，所以这里不去动它，免得把永久链接改坏。 */
-    if(gitee){
-      ['heroDl', 'dlMain'].forEach(function(id){ var el = $(id); if(el) el.href = gitee; });
-    }
   }
 
   try{
