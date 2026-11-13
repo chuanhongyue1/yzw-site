@@ -176,6 +176,22 @@ svg{display:block}
 .download__tip{margin:32px auto 0;max-width:620px;font-size:13px;color:#8b8f99;text-wrap:balance}
 .download__tip b{color:#07070a;font-weight:600}
 
+/* 另一个软件：附在下载区里，浅色卡片，不另外切一块背景 */
+.other{max-width:720px;margin:clamp(44px,6vw,66px) auto 0;padding-top:clamp(26px,4vw,38px);
+  border-top:1px solid #e8e9e6;text-align:left}
+.other__label{text-align:center;font-size:12px;letter-spacing:.16em;color:#9a9ea6;margin-bottom:18px}
+.other__card{display:flex;align-items:center;gap:16px;padding:18px 20px;
+  border:1px solid #e6e7e3;border-radius:16px;background:#fafaf8;
+  transition:border-color .4s var(--ease),background-color .4s var(--ease)}
+.other__card:hover{border-color:#d8d9d4;background:#f7f7f4}
+.other__icon{width:52px;height:52px;flex:none;border-radius:14px;background:#07070a;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:600;letter-spacing:.02em}
+.other__text{flex:1;min-width:0}
+.other__h{font-size:16px;font-weight:600;letter-spacing:-.01em;color:#07070a}
+.other__p{margin-top:5px;font-size:13px;line-height:1.65;color:#6a6e78}
+.other__meta{margin-top:7px;font-size:12px;color:#9a9ea6;font-variant-numeric:tabular-nums}
+.other__card .btn{padding:12px 24px;font-size:14px;flex:none;box-shadow:0 4px 14px rgba(7,7,10,.16)}
+
 /* 软件使用声明：默认收起，只占一行，点开看全文；不依赖脚本，禁用 JS 也能展开 */
 .legal{max-width:760px;margin:clamp(52px,7vw,80px) auto 0;padding-top:clamp(28px,4vw,40px);
   border-top:1px solid #e8e9e6;text-align:left}
@@ -232,6 +248,8 @@ html.js [data-in]{opacity:0}
   .story__panel{gap:28px}
   .story__p{font-size:15px}
   .icons__row{grid-template-columns:repeat(4,max-content)}
+  .other__card{flex-wrap:wrap;padding:16px;gap:14px}
+  .other__card .btn{flex:1 1 100%;justify-content:center}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
@@ -361,6 +379,20 @@ html.js [data-in]{opacity:0}
         <a class="btn btn--line" id="dlAlt" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk">备用下载（固定地址）</a>
       </div>
       <p class="download__tip"><b>只有安卓版</b>，没有 iOS、Windows、macOS。装过旧版直接覆盖，数据保留。</p>
+
+      <!-- 另一个软件：同一块浅色区里加一张卡片，不另起背景 -->
+      <div class="other" id="yichu">
+        <p class="other__label">另一个软件</p>
+        <div class="other__card">
+          <div class="other__icon" aria-hidden="true">一触</div>
+          <div class="other__text">
+            <p class="other__h">一触</p>
+            <p class="other__p">安卓上的自动点击器，重复的点击和滑动交给它。</p>
+            <p class="other__meta">v5.64.98 · 约 0.9 MB · 仅 Android</p>
+          </div>
+          <a class="btn btn--dark" href="https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/v5.64.98/qingdian.apk" target="_blank" rel="noopener noreferrer">下载</a>
+        </div>
+      </div>
 
       <details class="legal legal__box" id="legal">
         <summary>软件使用声明</summary>
