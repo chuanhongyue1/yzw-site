@@ -273,7 +273,7 @@ html.js [data-in]{opacity:0}
           下载 APK
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
         </a>
-        <span class="hero__ver"><span id="verInline" class="mono">v1.6.9</span> · 仅 Android</span>
+        <span class="hero__ver"><span id="verInline" class="mono">v1.6.10</span> · 仅 Android</span>
       </div>
     </div>
     <div class="hero__scroll" aria-hidden="true"><i></i>Scroll</div>
@@ -352,13 +352,13 @@ html.js [data-in]{opacity:0}
   <section class="download" id="download">
     <div class="download__in">
       <h2>装上砚中雪</h2>
-      <p class="download__meta"><span id="ver" class="mono">v1.6.9</span> · 约 <span id="size" class="mono">31.8 MB</span> · 仅 Android 8.0 及以上</p>
+      <p class="download__meta"><span id="ver" class="mono">v1.6.10</span> · 约 <span id="size" class="mono">31.8 MB</span> · 仅 Android 8.0 及以上</p>
       <div class="download__actions">
         <a class="btn btn--dark" id="dlMain" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk">
           下载 APK
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0 5-5m-5 5-5-5M5 20h14"/></svg>
         </a>
-        <a class="btn btn--line" id="dlAlt" href="https://github.com/chuanhongyue1/yzw-site" target="_blank" rel="noopener noreferrer">GitHub 项目</a>
+        <a class="btn btn--line" id="dlAlt" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk">备用下载（固定地址）</a>
       </div>
       <p class="download__tip"><b>只有安卓版</b>，没有 iOS、Windows、macOS。装过旧版直接覆盖，数据保留。</p>
 
@@ -589,12 +589,18 @@ html.js [data-in]{opacity:0}
      以前拉 catalog.json（8MB）只为读一个版本号，太亏；探针文件就一句话。 */
   var PROBE = 'https://chuanhongyue1.github.io/yzw-data/version.json';
 
-  /* 只改版本号文字。下载按钮走文件名固定的永久地址，发版时覆盖同名文件，
-     链接本身不用换，所以这里不去动 href。 */
+  /* 主下载按钮跟着版本号走：文件名带版本和平台，下载下来一眼认得出。
+     拼法固定，以后发版只换目录里的版本号，网页不用改。
+     备用按钮永远指向固定地址，主线路抽风时兜底。 */
+  var DL_BASE = 'https://gitee.com/chuanhongyue123456/chuanshaoapp/releases/download/';
+  var PERM = 'https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk';
   function applyVersion(tag){
     /* 打上标记：区分「拿到线上版本」和「还是页面里写死的兜底值」，排查时一眼可见 */
     document.documentElement.setAttribute('data-version', tag);
     ['ver', 'verInline'].forEach(function(id){ var el = $(id); if(el) el.textContent = tag; });
+    var url = DL_BASE + tag + '/Yanzhongxue-' + tag + '-Android.apk';
+    ['heroDl', 'dlMain'].forEach(function(id){ var el = $(id); if(el) el.href = url; });
+    var alt = $('dlAlt'); if(alt) alt.href = PERM;
   }
 
   try{
