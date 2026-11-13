@@ -180,6 +180,24 @@ svg{display:block}
 .download__tip{margin:32px auto 0;max-width:620px;font-size:13px;color:#8b8f99;text-wrap:balance}
 .download__tip b{color:#07070a;font-weight:600}
 
+/* 软件使用声明：默认收起，只占一行，点开看全文；不依赖脚本，禁用 JS 也能展开 */
+.legal{max-width:760px;margin:clamp(52px,7vw,80px) auto 0;padding-top:clamp(28px,4vw,40px);
+  border-top:1px solid #e8e9e6;text-align:left}
+.legal__box>summary{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  cursor:pointer;list-style:none;padding:6px 0;font-size:14px;color:#2b2e36;
+  transition:color .3s var(--ease)}
+.legal__box>summary::-webkit-details-marker{display:none}
+.legal__box>summary::marker{content:''}
+.legal__box>summary:hover{color:#07070a}
+.legal__box>summary::after{content:'';width:7px;height:7px;flex:none;margin-right:3px;
+  border-right:1.5px solid #9a9ea6;border-bottom:1.5px solid #9a9ea6;
+  transform:rotate(45deg) translateY(-2px);transition:transform .35s var(--ease)}
+.legal__box[open]>summary::after{transform:rotate(-135deg) translateY(-2px)}
+.legal__box>summary:focus-visible{outline:2px solid #07070a;outline-offset:4px;border-radius:4px}
+.legal__body{margin-top:18px;max-width:700px;font-size:13px;line-height:2.05;color:#70747c;text-wrap:pretty}
+.legal__body p+p{margin-top:14px}
+.legal__body b{color:#2b2e36;font-weight:600}
+
 /* 页脚 */
 .footer{background:var(--white);color:#07070a;padding:0 var(--pad) clamp(28px,4vw,44px)}
 .footer__in{max-width:1100px;margin:0 auto;padding-top:28px;border-top:1px solid #e3e4e0;
@@ -354,6 +372,17 @@ html.js [data-in]{opacity:0}
         <a class="btn btn--line" id="dlAlt" href="https://chuanhongyue1.github.io/yzw-data/app-arm64-v8a-release.apk" target="_blank" rel="noopener noreferrer">永久地址</a>
       </div>
       <p class="download__tip"><b>只有安卓版</b>，没有 iOS、Windows、macOS。装过旧版直接覆盖，数据保留。</p>
+
+      <details class="legal legal__box" id="legal">
+        <summary>软件使用声明</summary>
+        <div class="legal__body">
+          <p>郑重声明：本软件来源于网络，非本人开发。</p>
+          <p>依据《计算机软件保护条例》相关规定，此软件仅用于学习和研究软件的设计思想与原理，绝不可用于任何商业或非法目的。</p>
+          <p>在此，特别强调，本人分享此软件纯粹是为了学习交流之目的，不带有任何盈利意图。同时，本人承诺不会在软件植入病毒或添加后门、侵犯隐私的行为。若用户发现软件有此类问题，请务必及时联系我，我将立即采取删除等措施，坚决阻止软件的进一步传播。</p>
+          <p>知识产权严格受法律保护，请勿侵权。我们倡导并大力支持正版软件，正版软件的使用不仅能确保良好的用户体验和稳定的性能，更是对软件开发者创新和努力的尊重与支持。</p>
+          <p>用户一旦使用本软件，即视为同意本声明内容，并自行承担相应后果。请务必合法使用软件，共同维护良好的网络环境和法律秩序。</p>
+        </div>
+      </details>
     </div>
   </section>
 
@@ -363,6 +392,7 @@ html.js [data-in]{opacity:0}
       <div class="footer__links">
         <a href="#top">回到顶部</a>
         <a href="#download">下载</a>
+        <a href="#legal">声明</a>
         <a href="https://github.com/chuanhongyue1/yzw-site" target="_blank" rel="noopener noreferrer">GitHub 项目</a>
         <a href="mailto:chuanhongyue959@gmail.com">chuanhongyue959@gmail.com</a>
       </div>
@@ -592,6 +622,15 @@ html.js [data-in]{opacity:0}
     requestAnimationFrame(step);
   }
   setTimeout(function(){ countUp($('size'), 31.8, ' MB', 1000); }, 1400);
+
+  /* ---- 声明：从页脚点进来直接展开，省得再点一次 ---- */
+  var legalBox = $('legal');
+  if(legalBox){
+    if(window.location.hash === '#legal') legalBox.open = true;
+    Array.prototype.forEach.call(document.querySelectorAll('a[href="#legal"]'), function(a){
+      a.addEventListener('click', function(){ legalBox.open = true; });
+    });
+  }
 
   /* ---- 版本探针：只取几十字节的 version.json，页面显示永远跟最新发行版一致 ----
      以前拉 catalog.json（8MB）只为读一个版本号，太亏；探针文件就一句话。 */
